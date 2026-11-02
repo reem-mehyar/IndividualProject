@@ -40,12 +40,13 @@
   \setsansfont[Path=./fonts/, BoldFont=FiraSans-Bold, UprightFont=FiraSans-Regular, ItalicFont=FiraSans-Italic, BoldItalicFont=FiraSans-BoldItalic]{FiraSans.ttf}
 \fi
 
-\usepackage[libertine,bigdelims,vvarbb]{newtxmath} % bb from STIX
-\usepackage[cal=boondoxo]{mathalfa} % mathcal
-
-\usepackage{microtype} % improve typography
-\usepackage{anyfontsize} % allow any size of font
 \usepackage{amsmath,amsfonts,amsbsy,amssymb}
+
+\usepackage[libertine,bigdelims,vvarbb]{newtxmath}
+\usepackage[cal=boondoxo]{mathalfa}
+
+\usepackage{microtype}
+\usepackage{anyfontsize}
 \usepackage[style]{abstract} % abstract styling
 
 % set bibliography styling
