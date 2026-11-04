@@ -11,3 +11,7 @@
 *.blg
 .DS_Store
 simulation/results
+.venv/
+*.egg-info/
+__pycache__/
+*.pyc
