@@ -1,0 +1,66 @@
+---
+# Meng-style static network simulation
+
+
+experiment:
+  conditions: [no_bot, random, preferential]
+
+network:
+  type: barabasi-albert
+  directed: false
+  n_humans: 850
+  n_bots: 150
+  ba_m: 10
+  bot_connections: 20 # num bot connections = average degree in network
+  bot_bot_edges: false
+  #total_nodes calculated in code
+
+bots:
+  opinion: 1.0
+  activity: 3.0
+
+humans:
+  initial_opinion_dist: uniform
+  opinion_min: 0.0
+  opinion_max: 1.0
+  activity: 1.0 
+  epsilon_mean: 0.25
+  epsilon_sd: 0.05
+  epsilon_min: 0.01
+
+attention:
+  limit: 6
+  if_fewer_than_limit: take_all
+  weighting: activity_times_degree
+  with_replacement: false
+ 
+opinion_update:
+  method: modified_hk
+  threshold_inclusive: true
+  include_self: true
+  synchronous: true
+  empty_set: keep_opinion
+
+simulation:
+  steps: 100
+  burn_in: 20
+  replicates: 50
+  master_seed: 42
+
+metrics:
+  population_scope: humans_only
+  entropy_bins: 10 
+  baseline: 0.5
+  influenced_threshold: 0.05   # human counts as influenced if |x_bot - x_nobot| at final step exceeds this
+  network_every: 10            # steps between network metric measurements
+  compute:
+    population: [entropy, tendency, polarization]
+    exposure: [h2br, accepted_bot_exposure]            # every step
+    individual: [individual_revision, bot_attributable_revision, proportion_influenced]
+    network: [mean_bot_degree, opinion_assortativity]
+
+
+output:
+  dir: results/static
+  save_opinion_history: true # save human op at every timestep
+  save_edge_snapshots_at: [0, 50, 100]

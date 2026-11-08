@@ -1,0 +1,95 @@
+---
+# Experimental adaptive directed network simulation
+
+
+experiment: 
+  conditions: [no_bot, random, preferential]
+  paired_baseline: no_bot
+
+network:
+  type: directed_twt_like
+  directed: true 
+  n_humans: 850
+  n_bots: 150
+  generator:                         # fill from Myers 2014 / Efstathiades 2015; loader should refuse to run while any value is null
+    method: directed_configuration_model
+    mean_out_degree: null
+    in_degree: {family: null, exponent: null, max_degree: 849}   # truncated at n_humans - 1
+    out_degree: {family: null}
+    reciprocity: null
+    allow_self_loops: false
+    allow_multi_edges: false
+
+
+bots:
+  opinion: 1.0
+  activity: 3.0 
+  followers: mean_human_in_degree
+  follows_others: false
+  follow_adds_edge: true # human who follows bot keeps existing edges
+
+
+humans:
+  initial_opinion_dist: uniform
+  opinion_min: 0.0
+  opinion_max: 1.0
+  activity: 1.0 
+  epsilon_mean: 0.25
+  epsilon_sd: 0.05
+  epsilon_min: 0.01
+
+attention:
+  source: followees
+  limit: 6
+  if_fewer_than_limit: take_all
+  weighting: activity_times_degree
+  degree_basis: current_in_degree
+  with_replacement: false # remove already selected accounts for attention from sampling pool
+
+opinion_update:
+  method: modified_hk
+  threshold_inclusive: true
+  include_self: true
+  synchronous: true
+  empty_set: keep_opinion
+
+rewiring:
+  q_values: [0.0, 0.05, 0.1, 0.3]
+  trigger: attended_out_of_range # attention set members who fall outside confidence threshold ϵ 
+  judged_on: opinions_at_t
+  apply: end_of_step
+  applies_to: [human, bot]           # unfollowed accounts can be either
+  replacement:
+    rule: uniform_random_global      # Sasahara global replacement
+    candidates: all_nodes            # humans and bots
+    exclude: [self, currently_followed, just_unfollowed]
+
+simulation:
+  steps: 500                         # pilot sets the final T (300-500) from where structural metrics plateau
+  report_steps: [100, final]
+  burn_in: 20                        # carried over from static; used for time-averaged exposure metrics
+  replicates: 50
+  master_seed: 42
+
+metrics:
+  population_scope: humans_only
+  entropy_bins: 10
+  baseline: 0.5
+  influenced_threshold: 0.05
+  network_every: 10
+  compute:
+    population: [entropy, tendency, polarization]
+    exposure: [h2br, accepted_bot_exposure]                        # every step
+    individual: [individual_revision, bot_attributable_revision, proportion_influenced]
+    network: [mean_bot_in_degree, opinion_assortativity, in_degree_gini, unfollow_counts] # gini measures whether rewiring concentrates followers around a few popular accounts or dist more evenly
+
+sensitivity:
+  enabled: false
+  epsilon_mean: [0.2, 0.3]
+  network_size: [3000, 5000]
+  #could add mroe if needed
+
+output:
+  dir: results/adaptive
+  save_opinion_history: true
+  save_edge_snapshots_at: [0, 100, last]
