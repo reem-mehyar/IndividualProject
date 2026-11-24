@@ -3,7 +3,7 @@
 
 
 experiment:
-  conditions: [no_bot, random, preferential]
+  conditions: [no_bot, random, preferential, no_bot_null]
 
 network:
   type: barabasi-albert
@@ -13,11 +13,14 @@ network:
   ba_m: 10
   bot_connections: 20 # num bot connections = average degree in network
   bot_bot_edges: false
-  #total_nodes calculated in code
+  
 
 bots:
   opinion: 1.0
   activity: 3.0
+
+rewiring: 
+  q: 0.0
 
 humans:
   initial_opinion_dist: uniform

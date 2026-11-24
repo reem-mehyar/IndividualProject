@@ -1,4 +1,3 @@
-""""""
 
 
 
@@ -68,7 +67,7 @@ class Simulation:
         self.degree = self._in_degree()
         self._refresh_weights()
  
-    # ------------------------------------------------------------------ helpers
+
     def _in_degree(self) -> np.ndarray:
         """Number of accounts following each node (counts every row, bots included)."""
         return np.bincount(self.followees[self.followees >= 0], minlength=self.n_nodes)
@@ -83,7 +82,7 @@ class Simulation:
             log_weight = np.log(weight)
         self._log_weight = np.where(valid & (weight > 0), log_weight, -np.inf)
  
-    # --------------------------------------------------------------------- step
+    
     def step(self) -> StepInfo:
         nh = self.n_humans
         rows = self.followees[:nh]

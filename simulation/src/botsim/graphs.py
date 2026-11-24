@@ -13,8 +13,8 @@ import networkx as nx
 import numpy as np 
 
 
-CONDITIONS = ("no_bot", "random", "preferential")
-
+CONDITIONS = ("no_bot", "random", "preferential", "no_bot_null")
+NULL_CONDITION = "no_bot_null"
 
 def no_bot_network(n_humans: int, m: int, rng: np.random.Generator) -> nx.Graph:
     """Undirected Barabasi-Albert network of humans only.
@@ -95,6 +95,8 @@ def build_network(condition: str, human_graph: nx.Graph, n_bots: int,
         return add_random_bots(human_graph, n_bots, bot_connections, rng)
     if condition == "preferential":
         return add_preferential_bots(human_graph, n_bots, bot_connections, rng)
+    if condition == "no_bot_null":
+        return human_graph.copy()
     raise ValueError(f"Unknown condition: {condition}")
  
  
